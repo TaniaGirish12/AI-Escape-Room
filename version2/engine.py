@@ -203,8 +203,12 @@ class GameEngine:
             result = self._result("other", False, "no_game_action",
                                   "Nothing in the room changes.")
 
+        # The log keeps the precise internal reason; the returned result does not.
+        internal_reason = result.pop("internal_reason", result["reason"])
         self.state["moves"] += 1
-        self.state["log"].append({k: result[k] for k in ("action", "target", "item", "success", "reason")})
+        self.state["log"].append({"action": result["action"], "target": result["target"],
+                                  "item": result["item"], "success": result["success"],
+                                  "reason": internal_reason})
         return result
 
     # ------------------------------------------------------------ actions
@@ -380,13 +384,15 @@ class GameEngine:
                                 f"The lock on the {name} needs exactly {len(secret)} digits.", target=object_id)
 
         # The exit also requires the earlier puzzles. A lucky guess is rejected
-        # with the same message as a wrong code, so nothing is given away.
+        # with exactly the same result as a wrong code, so nothing is given away
+        # to the player or to the LLM. Only the internal log knows the difference.
         prerequisites_met = all(self.state["puzzles"][p] for p in lock.get("requires_puzzles", []))
         if code != secret or not prerequisites_met:
             self.state["failed_code_attempts"][object_id] += 1
-            reason = "wrong_code" if code != secret else "prerequisites_missing"
-            return self._result("enter_code", False, reason,
-                                f"The code {code} is rejected. The {name} stays locked.", target=object_id)
+            result = self._result("enter_code", False, "code_rejected",
+                                  f"The code {code} is rejected. The {name} stays locked.", target=object_id)
+            result["internal_reason"] = "wrong_code" if code != secret else "prerequisites_missing"
+            return result
 
         status["locked"] = False
         self.state["puzzles"][lock["puzzle"]] = True
