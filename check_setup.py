@@ -14,7 +14,7 @@ from google import genai
 load_dotenv(Path(__file__).resolve().parent / ".env")
 
 api_key = os.getenv("GEMINI_API_KEY", "")
-model = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
+model = os.getenv("GEMINI_MODEL", "gemini-3.6-flash")
 
 if not api_key or api_key == "your_api_key_here":
     sys.exit("GEMINI_API_KEY is not set. Copy .env.example to .env and add your key.")

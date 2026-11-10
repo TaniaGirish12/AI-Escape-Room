@@ -70,7 +70,7 @@ In Version 2 the digits are random in every game. In Version 1 they are always `
 | Purpose | Technology |
 |---|---|
 | Language | Python 3.10+ |
-| LLM | Google Gemini API, free tier (`google-genai` SDK). Default model `gemini-3.8-flash`, configurable |
+| LLM | Google Gemini API, free tier (`google-genai` SDK). Default model `gemini-3.6-flash` (stable), configurable |
 | Interface | Streamlit |
 | Game configuration | JSON (`version2/game_config.json`) |
 | Configuration / secrets | `python-dotenv` and a `.env` file (not committed) |

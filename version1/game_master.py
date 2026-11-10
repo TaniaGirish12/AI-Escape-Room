@@ -12,7 +12,7 @@ import os
 from google import genai
 from google.genai import types
 
-DEFAULT_MODEL = "gemini-3.8-flash"
+DEFAULT_MODEL = "gemini-3.6-flash"
 
 # The Game Master is told to print this marker when the player gets out.
 # The app looks for it to know that the game is over.

@@ -10,7 +10,7 @@ import time
 from google import genai
 from google.genai import types
 
-DEFAULT_MODEL = "gemini-3.8-flash"
+DEFAULT_MODEL = "gemini-3.6-flash"
 
 
 class LLMError(Exception):
