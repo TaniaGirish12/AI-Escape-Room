@@ -1,0 +1,98 @@
+{
+  "title": "The Midnight Library",
+  "intro": "You wake up with your cheek on a cold wooden floor. A single green-shaded lamp lights a private library you have never seen before. Somewhere behind you a lock clicks shut.\n\nAround you are a **desk** with a drawer, a tall **bookshelf**, a large **painting**, a glass **cabinet**, a silent **grandfather clock** and a heavy oak **door** with a keypad.\n\nWhat do you do?",
+  "room_description": "You are in a private library lit by one green-shaded lamp. There is a desk with a drawer, a tall bookshelf, a large painting, a glass cabinet, a grandfather clock and a heavy oak door with a keypad.",
+
+  "codes": {
+    "drawer_code": {"length": 3},
+    "door_code": {"length": 4}
+  },
+
+  "objects": {
+    "desk": {
+      "name": "desk",
+      "aliases": ["writing desk", "table", "note", "lamp", "paper"],
+      "examine": "An old oak desk with a green-shaded lamp. A handwritten note is pinned under the lamp: \"Knowledge has colours. Read red first, then green, then blue.\" Below the desktop is a single drawer."
+    },
+    "drawer": {
+      "name": "drawer",
+      "aliases": ["desk drawer", "locked drawer", "combination lock"],
+      "lock": {"type": "code", "secret": "drawer_code", "puzzle": "drawer_code"},
+      "contains": ["brass_key"],
+      "examine_locked": "The desk drawer is held shut by a three-digit combination lock.",
+      "examine_open": "The drawer is open.",
+      "unlock_text": "The combination lock clicks and the drawer slides open."
+    },
+    "bookshelf": {
+      "name": "bookshelf",
+      "aliases": ["shelf", "shelves", "books", "book", "bookcase", "red book", "green book", "blue book"],
+      "examine": "Hundreds of dusty brown books fill the shelves. Three books look new and stick out from the rest: a blue book marked \"Vol. {book_blue}\", a red book marked \"Vol. {book_red}\" and a green book marked \"Vol. {book_green}\"."
+    },
+    "painting": {
+      "name": "painting",
+      "aliases": ["picture", "portrait", "canvas", "frame", "lighthouse"],
+      "reveal": {"item": "uv_flashlight", "puzzle": "painting_uv"},
+      "examine": "A large oil painting of a night sky over a lighthouse. In normal light there is nothing unusual about it.",
+      "examine_revealed": "The painting of the lighthouse. Under the violet light four glowing digits are visible in the corner: {door_code}.",
+      "reveal_text": "The violet beam sweeps across the canvas and four glowing digits appear in the corner of the painting: {door_code}."
+    },
+    "cabinet": {
+      "name": "glass cabinet",
+      "aliases": ["cabinet", "glass case", "display case", "cupboard"],
+      "lock": {"type": "key", "item": "brass_key", "puzzle": "cabinet_key"},
+      "contains": ["uv_flashlight"],
+      "contents_visible": true,
+      "examine_locked": "A glass-fronted cabinet secured with a small brass lock. Through the glass you can see a strange torch with a violet lens, but you cannot reach it.",
+      "examine_open": "The glass cabinet stands open.",
+      "unlock_text": "The brass key turns in the lock and the glass door of the cabinet swings open."
+    },
+    "clock": {
+      "name": "grandfather clock",
+      "aliases": ["clock", "pendulum", "old clock"],
+      "examine": "A tall grandfather clock, stopped at midnight. Words are engraved on the still pendulum: \"What the eye cannot see, violet light will free.\""
+    },
+    "door": {
+      "name": "door",
+      "aliases": ["exit", "keypad", "oak door", "exit door", "way out"],
+      "lock": {
+        "type": "code",
+        "secret": "door_code",
+        "puzzle": "door_code",
+        "requires_puzzles": ["drawer_code", "cabinet_key", "painting_uv"]
+      },
+      "final_exit": true,
+      "examine_locked": "A heavy oak door, firmly locked. Next to it is an electronic keypad waiting for a four-digit code.",
+      "examine_open": "The door stands open.",
+      "unlock_text": "The keypad turns green, the bolts slide back and the heavy oak door swings open. Cool night air rushes in. You have escaped the Midnight Library!"
+    }
+  },
+
+  "items": {
+    "brass_key": {
+      "name": "brass key",
+      "aliases": ["key", "small key", "small brass key"],
+      "description": "A small brass key. It looks like it fits a small lock."
+    },
+    "uv_flashlight": {
+      "name": "UV flashlight",
+      "aliases": ["flashlight", "torch", "uv torch", "uv light", "violet torch", "violet light", "blacklight", "black light", "light"],
+      "description": "A torch with a violet lens. It gives off ultraviolet light."
+    }
+  },
+
+  "puzzles": {
+    "drawer_code": "Open the desk drawer",
+    "cabinet_key": "Unlock the glass cabinet",
+    "painting_uv": "Reveal the hidden message",
+    "door_code": "Unlock the exit door"
+  },
+
+  "hints": {
+    "drawer_code": "The note on the desk talks about colours. Have a close look at the bookshelf.",
+    "take_brass_key": "The drawer is open. Have you taken what is inside?",
+    "cabinet_key": "You are carrying a key. Something in this room has a small brass lock.",
+    "take_uv_flashlight": "The cabinet is open. Have you taken what is inside?",
+    "painting_uv": "The clock's pendulum says violet light reveals what the eye cannot see. What in this room is meant to be looked at?",
+    "door_code": "You have seen four glowing digits. The door keypad is waiting for a four-digit code."
+  }
+}
