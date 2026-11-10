@@ -66,6 +66,14 @@ def test_key_cannot_be_used_before_it_is_collected(game):
     assert game.state["objects"]["cabinet"]["locked"]
 
 
+def test_replies_do_not_name_items_the_player_has_not_found(game):
+    for result in (act(game, "use", "cabinet", item="brass_key"), act(game, "examine", "brass_key"),
+                   act(game, "take", "brass key"), act(game, "use", "painting", item="uv_flashlight")):
+        assert not result["success"]
+        assert "brass" not in result["message"].lower() and "uv" not in result["message"].lower()
+        assert "_" not in result["message"]
+
+
 def test_key_in_open_drawer_must_still_be_picked_up(game):
     act(game, "enter_code", "drawer", code=DRAWER_CODE)
     result = act(game, "use", "cabinet", item="brass key")   # seen, but not taken

@@ -38,7 +38,7 @@
     },
     "cabinet": {
       "name": "glass cabinet",
-      "aliases": ["cabinet", "glass case", "display case", "cupboard"],
+      "aliases": ["cabinet", "glass case", "display case", "cupboard", "glass", "glass door"],
       "lock": {"type": "key", "item": "brass_key", "puzzle": "cabinet_key"},
       "contains": ["uv_flashlight"],
       "contents_visible": true,

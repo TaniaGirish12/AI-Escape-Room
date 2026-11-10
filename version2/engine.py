@@ -218,6 +218,10 @@ class GameEngine:
 
     def _unknown(self, action: str, text) -> dict:
         name = str(text).strip() or "that"
+        if self.find_item(text):
+            # A real item the player has not uncovered yet: do not confirm that it exists.
+            return self._result(action, False, "unknown_object",
+                                "You cannot see anything like that here.")
         return self._result(action, False, "unknown_object",
                             f"There is nothing like \"{name}\" in this room.", target=name)
 
@@ -315,9 +319,13 @@ class GameEngine:
         shown_item = str(item_text).strip() or "that"
         # Inventory check comes first: an item that was never collected cannot
         # be used, whatever the player says about it.
-        if not item_id or item_id not in self.state["inventory"]:
+        if not item_id:
             return self._result("use", False, "item_not_in_inventory",
                                 f"You are not carrying anything like \"{shown_item}\".", item=shown_item)
+        if item_id not in self.state["inventory"]:
+            # A real item that was not collected: the reply does not name it.
+            return self._result("use", False, "item_not_in_inventory",
+                                "You are not carrying anything like that.")
 
         item_name = self.items[item_id]["name"]
         if not self._normalise(target_text):
