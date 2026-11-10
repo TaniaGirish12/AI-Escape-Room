@@ -86,7 +86,7 @@ def get_client() -> genai.Client:
         raise GameMasterError(
             "GEMINI_API_KEY is not set. Copy .env.example to .env and add your key."
         )
-    return genai.Client(api_key=api_key)
+    return genai.Client(api_key=api_key, http_options=types.HttpOptions(timeout=60_000))
 
 
 def ask_game_master(client: genai.Client, history: list[dict], player_message: str) -> str:

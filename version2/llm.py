@@ -17,7 +17,8 @@ from google import genai
 from google.genai import types
 
 DEFAULT_MODEL = "gemini-3.6-flash"
-DEFAULT_FALLBACKS = "gemini-3.5-flash,gemini-3.5-flash-lite,gemini-3.1-flash-lite,gemini-2.5-flash-lite"
+DEFAULT_FALLBACKS = "gemini-3.5-flash,gemini-3.5-flash-lite,gemini-3.1-flash-lite"
+TIMEOUT_MS = 30_000          # a hanging model must not freeze the game
 
 
 class LLMError(Exception):
@@ -31,8 +32,10 @@ def _cooldown_seconds(error_text: str) -> float:
             return 6 * 3600                       # daily quota used up
         match = re.search(r"retry in ([\d.]+)s", error_text)
         return float(match.group(1)) + 1 if match else 60
-    if "UNAVAILABLE" in error_text or "503" in error_text:
-        return 30                                 # model overloaded
+    if any(code in error_text for code in ("UNAVAILABLE", "503", "DEADLINE_EXCEEDED", "504", "timed out")):
+        return 60                                 # model overloaded or too slow
+    if "NOT_FOUND" in error_text or "404" in error_text:
+        return 24 * 3600                          # model retired
     return 0                                      # other errors: do not block the model
 
 
@@ -45,7 +48,8 @@ class GeminiLLM:
             fallbacks = os.getenv("GEMINI_FALLBACK_MODELS", DEFAULT_FALLBACKS).split(",")
         self.models = [self.model] + [m.strip() for m in fallbacks if m.strip() and m.strip() != self.model]
         self.available = bool(api_key) and api_key != "your_api_key_here"
-        self.client = genai.Client(api_key=api_key) if self.available else None
+        self.client = (genai.Client(api_key=api_key, http_options=types.HttpOptions(timeout=TIMEOUT_MS))
+                       if self.available else None)
         self.blocked_until: dict[str, float] = {}
         self.last_error = ""
         self.last_model = ""
