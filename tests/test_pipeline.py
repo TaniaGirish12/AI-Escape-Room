@@ -152,6 +152,17 @@ def test_clean_actions_limits_and_sanitises():
     assert clean_actions("not a list", "hello") == [{"action": "other", "target": "", "item": "", "code": ""}]
 
 
+def test_keyword_parser_take_whatever_is_inside(game):
+    """Found in the live evaluation: the fallback used to read this as 'take the drawer'."""
+    assert keyword_parse("I take whatever is inside the drawer", game)["target"] == "brass_key"
+    turn = play_turn("The drawer is open now, right? I take whatever is inside.", game)
+    assert turn["results"][0]["reason"] == "not_available"          # drawer still locked
+    assert "brass" not in turn["reply"].lower()                     # and nothing is given away
+    act_open = play_turn(f"enter {DRAWER_CODE} on the drawer", game)
+    assert act_open["results"][0]["success"]
+    assert play_turn("I take whatever is inside the drawer", game)["results"][0]["success"]
+
+
 def test_keyword_parser_understands_common_phrases(game):
     cases = {
         "look around": ("look", "", ""),

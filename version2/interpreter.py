@@ -156,6 +156,15 @@ def keyword_parse(player_text: str, engine: GameEngine) -> dict:
         item = items[0] if items else (unknown_tool.group(1).strip() if unknown_tool else "")
         return {**action, "action": "use", "item": item, "target": objects[0] if objects else ""}
     if verb == "take":
+        if not items and objects and re.search(r"\b(inside|in it|in there|contents|whatever|what is in|what's in)\b", text):
+            # "take whatever is inside the drawer" -> take what the container holds
+            contents = engine.objects[objects[0]].get("contains", [])
+            if contents:
+                return {**action, "action": "take", "target": contents[0]}
+        if not items and not objects and re.search(r"\b(inside|whatever|contents)\b", text):
+            # "take whatever is inside" with no container named: use what is visible, if anything
+            visible = [i for i in engine.items if engine._item_visible(i)]
+            return {**action, "action": "take", "target": visible[0] if visible else "that"}
         thing = items[0] if items else (objects[0] if objects else _rest_after(text, "take"))
         return {**action, "action": "take", "target": thing}
     if verb == "open":
