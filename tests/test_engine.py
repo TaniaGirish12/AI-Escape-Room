@@ -75,7 +75,8 @@ def test_key_in_open_drawer_must_still_be_picked_up(game):
 
 def test_wrong_drawer_code_is_rejected_and_counted(game):
     result = act(game, "enter_code", "drawer", code="111")
-    assert not result["success"] and result["reason"] == "wrong_code"
+    assert not result["success"] and result["reason"] == "code_rejected"
+    assert game.state["log"][-1]["reason"] == "wrong_code"
     assert game.state["objects"]["drawer"]["locked"]
     assert game.state["failed_code_attempts"]["drawer"] == 1
     assert act(game, "take", "brass key")["reason"] == "not_available"
@@ -126,18 +127,20 @@ def test_nonexistent_objects_and_items(game):
 # ------------------------------------------------------------ the exit
 
 def test_door_rejects_wrong_code(game):
-    assert act(game, "enter_code", "door", code="0000")["reason"] == "wrong_code"
+    assert act(game, "enter_code", "door", code="0000")["reason"] == "code_rejected"
     assert not game.state["escaped"]
 
 
 def test_correct_door_code_is_not_enough_without_the_puzzles(game):
     """A lucky guess (or a leaked code) must not skip the game."""
     result = act(game, "enter_code", "door", code=DOOR_CODE)
-    assert not result["success"] and result["reason"] == "prerequisites_missing"
+    assert not result["success"]
+    assert game.state["log"][-1]["reason"] == "prerequisites_missing"   # known only internally
     assert not game.state["escaped"]
-    # the reply must look exactly like a wrong code, so it gives nothing away
-    wrong = act(game, "enter_code", "door", code="1111")["message"].replace("1111", DOOR_CODE)
-    assert result["message"] == wrong
+    # what the player and the LLM see must be identical to a wrong code
+    wrong = act(game, "enter_code", "door", code="1111")
+    wrong["message"] = wrong["message"].replace("1111", DOOR_CODE)
+    assert result == wrong
 
 
 def test_solved_puzzles_stay_solved(game):
@@ -165,10 +168,10 @@ def test_nothing_happens_after_escape(game):
 # ------------------------------------------------------------ secrets and hints
 
 def test_public_state_never_contains_the_codes(game):
+    assert DRAWER_CODE not in str(game.public_state())
+    assert DOOR_CODE not in str(game.public_state())
     play_to_flashlight(game)
-    text = str(game.public_state())
-    assert DRAWER_CODE not in text.replace("moves", "") or game.state["puzzles"]["drawer_code"]
-    assert DOOR_CODE not in text
+    assert DOOR_CODE not in str(game.public_state())
 
 
 def test_no_reply_contains_the_door_code_before_it_is_revealed(game):
