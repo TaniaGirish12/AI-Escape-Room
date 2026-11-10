@@ -86,7 +86,9 @@ with st.sidebar:
         )
 
     if llm.available:
-        st.caption(f"Narrator: Gemini ({llm.model})")
+        used = llm.last_model or llm.model
+        st.caption(f"Narrator: Gemini ({used}). If a model hits its free-tier limit, "
+                   f"the next one is used: {', '.join(llm.models[1:])}.")
     else:
         st.caption("Narrator: offline mode (no GEMINI_API_KEY found). "
                    "The game is fully playable with plain descriptions.")

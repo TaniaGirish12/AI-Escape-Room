@@ -180,3 +180,25 @@ def test_whole_game_can_be_played_with_plain_sentences(game):
                     "shine the flashlight on the painting", f"enter {DOOR_CODE} on the door keypad"):
         play_turn(message, game)
     assert game.state["escaped"] and game.check_invariants() == []
+
+
+# ------------------------------------------------------------ free-tier quota handling
+
+def test_llm_moves_to_the_next_model_when_one_is_out_of_quota(monkeypatch):
+    from types import SimpleNamespace
+    import llm as llm_module
+
+    calls = []
+
+    def fake_generate(model, contents, config):
+        calls.append(model)
+        if model == "model-a":
+            raise RuntimeError("429 RESOURCE_EXHAUSTED ... requests per day limit exceeded ... retry in 40000s")
+        return SimpleNamespace(text="fine")
+
+    gemini = llm_module.GeminiLLM(api_key="test", model="model-a", fallbacks=["model-b"])
+    gemini.client = SimpleNamespace(models=SimpleNamespace(generate_content=fake_generate))
+    assert gemini.generate("system", "prompt") == "fine"
+    assert gemini.last_model == "model-b"
+    assert gemini.generate("system", "prompt") == "fine"
+    assert calls == ["model-a", "model-b", "model-b"]     # the exhausted model is skipped afterwards
