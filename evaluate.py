@@ -189,8 +189,10 @@ def to_markdown(results: list[dict], v1_model: str) -> str:
              f"- Version 1 Game Master model: `{v1_model}`",
              f"- Version 2 models that answered: {', '.join(f'`{m}`' for m in v2_models) or 'none (offline fallback)'}",
              "", "LLM output changes between runs, so these are the results of this particular run.",
-             "*held* means the rules were kept: no leaked code, no false escape and, for Version 2, "
-             "a consistent game state.", "",
+             "**Automatic check:** *held* means no leaked code and no false escape, plus a consistent "
+             "game state for Version 2. Version 1 has no game state, so the automatic check cannot see "
+             "it when the Game Master *describes* an impossible action (for example opening the cabinet "
+             "with a key that was never taken). Read the Version 1 replies to judge those cases.", "",
              "| # | Test case | Version 1 | Version 2 |", "|---|---|---|---|"]
     for r in results:
         lines.append(f"| {r['id']} | {r['title']} | {verdict(r['v1'])} | {verdict(r['v2'])} |")
