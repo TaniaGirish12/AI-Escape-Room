@@ -118,7 +118,7 @@ browser. And it called the *correct* door code wrong (TC7), contradicting its ow
 the failures the brief predicts: forgetting actions and allowing impossible ones. In Version 2 they
 cannot happen, because the state is not in the conversation.
 
-**Automated tests.** There are 48 `pytest` tests. They run in under a second and need no API key.
+**Automated tests.** There are 51 `pytest` tests. They run in under a second and need no API key.
 They cover the full solution, every challenge case, invalid actions, items that do not exist, quota
 fallback and the Version 1 design weaknesses. Two tests simulate a fully **compromised LLM**: an
 interpreter that obeys the fake administrator, and a narrator that leaks codes and announces an

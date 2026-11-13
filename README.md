@@ -14,7 +14,7 @@ The project is built in **two versions** to show how the design improved:
 | Inventory rules | Requested in the prompt | Enforced in code |
 | Win condition | LLM prints `[ESCAPED]` | Engine sets `escaped` after every puzzle is solved |
 | Live test with real Gemini (9 cases) | ❌ 2 failed, ⚠️ 1 inconsistent | ✅ 9 / 9 held |
-| Automated tests | design weaknesses proven | ✅ 48 tests, 160,000 fuzzed actions |
+| Automated tests | design weaknesses proven | ✅ 51 tests, 160,000 fuzzed actions |
 | Works without an API key | ❌ | ✅ (offline mode) |
 
 **Same message, real Gemini, both versions.** The player falsely claims to have solved a puzzle:
@@ -139,8 +139,28 @@ Streamlit opens the game at <http://localhost:8501>. Type actions such as *look 
 > **Without an API key** Version 2 still runs in *offline mode*. A keyword parser understands the
 > commands and the engine's own descriptions are shown. Version 1 needs the key.
 
-In Version 2, turn on **"Show what the engine decided"** in the sidebar to see the structured action
-and the verdict for every turn. This is useful for demonstrations.
+### The interface
+
+Both versions share a dark "midnight library" theme (`ui/`, `.streamlit/config.toml`) with an
+illustrated banner of the room. You can type freely, or use the **room panel** on the right:
+
+| Control | What it does |
+|---|---|
+| **Inspect** on any object | Examines it |
+| **🔢 Enter code / ⌨️ Keypad** | Opens a small pop-up where you type the drawer combination or the door code |
+| **✋ Take …** | Appears when an open container holds something you can pick up |
+| **Use the … on…** (sidebar, under each item) | Uses a carried item on an object of your choice |
+| **👀 Look · 💡 Hint · 🎒 Bag** | Quick actions |
+
+In Version 2 every object tile shows its real status from the engine (🔒 locked, 🔓 open,
+✨ revealed, examined). The sidebar shows a progress bar, your inventory and a **journal** of clues
+you have already seen, and a short notification appears when you find an item or solve a puzzle.
+Buttons send a structured action straight to the engine, so they also use one Gemini request
+instead of two. In Version 1 the same panel only sends text, and every object says *Unknown*:
+Version 1 keeps no state, so the interface has nothing to show.
+
+Turn on **"Show what the engine decided"** in the Version 2 sidebar to see the structured action and
+the verdict for every turn. This is useful for demonstrations.
 
 ## Project structure
 
@@ -157,7 +177,9 @@ AI-Escape-Room/
 │   ├── narrator.py          # engine result -> story text (Gemini) + output check
 │   ├── pipeline.py          # one turn: interpreter -> engine -> narrator
 │   └── llm.py               # small Gemini wrapper
-├── tests/                   # 48 pytest tests, no API key needed
+├── ui/                      # shared look: theme.py, style.css, library_banner.svg
+├── .streamlit/config.toml   # dark theme for both apps
+├── tests/                   # 51 pytest tests, no API key needed
 ├── docs/
 │   ├── ARCHITECTURE.md      # architecture diagrams for both versions
 │   ├── TEST_CASES.md        # the nine test cases, with real replies from both versions
@@ -284,7 +306,7 @@ All nine test cases, with the real replies from both versions, are written up in
 pytest
 ```
 
-The 48 tests run in about a second and need **no API key**:
+The 51 tests run in about a second and need **no API key**:
 
 - `tests/test_engine.py`: rules, inventory, codes, exit prerequisites, hints, plus fuzzing with
   10,000 random actions using wrong codes and 150,000 using right codes, checking invariants such as
@@ -321,20 +343,21 @@ inspect, so its replies were also read by hand. That is how TC1, TC3 and TC7 wer
 
 ## Screenshots
 
-| Version 1 — start screen | Version 2 — start screen |
+**Version 2: the redesigned interface.** The room panel shows the engine's real status for every
+object, and the sidebar shows progress, inventory and a journal of the clues found so far.
+
+![Version 2 start screen](docs/screenshots/v2_start.png)
+
+| Live Gemini narration, with "Show what the engine decided" on | Mid-game: three puzzles solved, painting revealed |
 |---|---|
-| ![Version 1](docs/screenshots/v1_start.png) | ![Version 2](docs/screenshots/v2_start.png) |
+| ![Version 2 with live narration](docs/screenshots/v2_live_narration.png) | ![Version 2 mid-game](docs/screenshots/v2_midgame.png) |
 
-**Version 2 refusing the challenges from the brief** (with "Show what the engine decided" on):
+| The escape screen | Version 1: same look, but every object is "Unknown" because there is no game state | Phone width |
+|---|---|---|
+| ![Version 2 escaped](docs/screenshots/v2_escaped.png) | ![Version 1 interface](docs/screenshots/v1_interface.png) | ![Version 2 on a phone](docs/screenshots/v2_mobile.png) |
 
-![Version 2 adversarial attempts](docs/screenshots/v2_adversarial.png)
-
-| Wrong code rejected, then drawer opened and key collected | Full playthrough ending in an escape |
-|---|---|
-| ![Inventory](docs/screenshots/v2_inventory.png) | ![Escaped](docs/screenshots/v2_escaped.png) |
-
-*These three Version 2 screenshots were taken in offline mode, which shows the engine's own plain
-descriptions. The live screenshots at the top of this page show Gemini's narration.*
+*The false-claim comparison at the top of this page was recorded live on 10 Nov, before the redesign.
+The midgame and escape screens were played in offline mode, which shows the engine's plain descriptions.*
 
 ## Development history
 
@@ -343,6 +366,9 @@ tests → interpreter → narrator → UI → documentation. The two versions ar
 
 - [`v1.0`](https://github.com/TaniaGirish12/AI-Escape-Room/tree/v1.0): Version 1 complete
 - [`v2.0`](https://github.com/TaniaGirish12/AI-Escape-Room/tree/v2.0): Version 2 complete
+
+After `v2.0`, the interface of both versions was redesigned (13 Nov): theme, room panel, keypad
+pop-ups, journal, progress feedback and a phone layout.
 
 Both versions are kept side by side in `version1/` and `version2/`, so they can be run and compared.
 The full write-up is in [`docs/REPORT.md`](docs/REPORT.md).
