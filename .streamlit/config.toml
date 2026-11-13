@@ -1,0 +1,14 @@
+# Shared look for both versions (Streamlit reads this when run from the project root).
+[theme]
+base = "dark"
+primaryColor = "#d4a64a"            # brass
+backgroundColor = "#14110e"         # ink
+secondaryBackgroundColor = "#211a14"
+textColor = "#eadfc8"               # parchment
+font = "sans serif"
+
+[client]
+toolbarMode = "minimal"             # hide the developer menu and "Deploy" button
+
+[browser]
+gatherUsageStats = false

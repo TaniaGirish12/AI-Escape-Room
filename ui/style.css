@@ -1,0 +1,168 @@
+/* The Midnight Library - shared styles for both versions.
+   Palette: ink background, parchment text, brass accents, violet for UV. */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  --ink: #14110e;
+  --panel: #1d1813;
+  --panel-2: #262019;
+  --line: rgba(212, 166, 74, 0.22);
+  --line-strong: rgba(212, 166, 74, 0.5);
+  --brass: #d4a64a;
+  --brass-soft: rgba(212, 166, 74, 0.12);
+  --parchment: #eadfc8;
+  --muted: #a8997f;
+  --ok: #8cc084;
+  --bad: #e07a5f;
+  --violet: #b9a2ff;
+}
+
+/* ---------- page ---------- */
+.stApp {
+  background:
+    radial-gradient(1100px 520px at 50% -160px, rgba(212, 166, 74, 0.13), transparent 70%),
+    var(--ink);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+[data-testid="stHeader"] { background: transparent; }
+.block-container { padding-top: 1.6rem; max-width: 1280px; }
+h1, h2, h3 { font-family: 'Cinzel', Georgia, serif !important; letter-spacing: 0.04em; }
+h3 { color: var(--brass) !important; font-size: 1.05rem !important; text-transform: uppercase; }
+
+/* ---------- hero banner ---------- */
+.hero {
+  position: relative; border-radius: 18px; overflow: hidden;
+  border: 1px solid var(--line); margin-bottom: 1.2rem;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+}
+.hero img { display: block; width: 100%; height: 230px; object-fit: cover; }
+.hero-text { position: absolute; left: 28px; bottom: 18px; right: 28px; }
+.hero-title {
+  font-family: 'Cinzel', Georgia, serif; font-size: 2.3rem; font-weight: 700;
+  color: var(--parchment); text-shadow: 0 2px 18px rgba(0, 0, 0, 0.9); line-height: 1.1;
+}
+.hero-sub { color: var(--muted); font-size: 0.95rem; margin-top: 4px; text-shadow: 0 1px 8px #000; }
+.version-pill {
+  display: inline-block; margin-left: 10px; padding: 3px 10px; vertical-align: middle;
+  font: 600 0.7rem 'Inter', sans-serif; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ink); background: var(--brass); border-radius: 999px;
+}
+
+/* ---------- chat ---------- */
+[data-testid="stChatMessage"] {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+  padding: 0.9rem 1.1rem; margin-bottom: 0.7rem;
+}
+[data-testid="stChatMessage"] p {
+  font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.24rem; line-height: 1.55;
+  color: var(--parchment);
+}
+[data-testid="stChatMessage"]:has(.who-player) {
+  background: transparent; border: 1px dashed rgba(234, 223, 200, 0.18);
+}
+[data-testid="stChatMessage"]:has(.who-player) p {
+  font-family: 'Inter', sans-serif; font-size: 0.98rem; font-style: italic; color: var(--muted);
+}
+[data-testid="stChatMessage"] [data-testid="stCaptionContainer"] p,
+[data-testid="stChatMessage"] code {
+  font-family: 'Inter', sans-serif; font-size: 0.78rem !important; color: var(--muted);
+}
+[data-testid="stChatInput"] { border: 1px solid var(--line-strong); border-radius: 14px; }
+
+/* ---------- chips ---------- */
+.chip {
+  display: inline-block; padding: 2px 9px; border-radius: 999px;
+  font: 600 0.68rem 'Inter', sans-serif; letter-spacing: 0.06em; text-transform: uppercase;
+  border: 1px solid currentColor; white-space: nowrap;
+}
+.chip.locked     { color: var(--bad); }
+.chip.open       { color: var(--ok); }
+.chip.revealed   { color: var(--violet); }
+.chip.examined   { color: var(--brass); }
+.chip.unexplored { color: #7d725f; }
+.chip.unknown    { color: #7d725f; border-style: dashed; }
+
+/* ---------- room panel ---------- */
+.panel-title {
+  font-family: 'Cinzel', serif; color: var(--brass); font-size: 0.95rem;
+  letter-spacing: 0.12em; text-transform: uppercase; margin: 0.2rem 0 0.6rem;
+}
+.obj-head { display: flex; align-items: center; gap: 10px; padding-bottom: 8px; }
+.obj-icon { font-size: 1.55rem; line-height: 1; }
+.obj-name { font-weight: 600; color: var(--parchment); font-size: 0.95rem; }
+.obj-sub { margin-top: 3px; }
+[data-testid="stVerticalBlock"]:has(> [data-testid="stElementContainer"] .obj-head) {
+  background: var(--panel); border-color: var(--line) !important; border-radius: 14px;
+  transition: border-color 0.15s ease;
+}
+[data-testid="stVerticalBlock"]:has(> [data-testid="stElementContainer"] .obj-head):hover { border-color: var(--line-strong) !important; }
+
+/* ---------- buttons ---------- */
+.stButton > button, [data-testid="stPopover"] button, .stFormSubmitButton > button {
+  border-radius: 10px; border: 1px solid var(--line); background: var(--panel-2);
+  color: var(--parchment); font-size: 0.85rem; transition: all 0.15s ease;
+}
+.stButton > button:hover, [data-testid="stPopover"] button:hover, .stFormSubmitButton > button:hover {
+  border-color: var(--brass); color: var(--brass); background: var(--brass-soft);
+}
+.stButton > button[kind="primary"] { background: var(--brass); color: var(--ink); border-color: var(--brass); }
+.stButton > button[kind="primary"]:hover { background: #e2b85c; color: var(--ink); }
+
+/* ---------- sidebar ---------- */
+[data-testid="stSidebar"] {
+  background: linear-gradient(180deg, #1b1611 0%, #110e0b 100%);
+  border-right: 1px solid var(--line);
+}
+.brand { font-family: 'Cinzel', serif; font-size: 1.05rem; color: var(--parchment); letter-spacing: 0.08em; }
+.brand-sub { color: var(--muted); font-size: 0.8rem; margin-bottom: 0.6rem; }
+.side-label {
+  font: 600 0.72rem 'Inter', sans-serif; color: var(--brass); letter-spacing: 0.14em;
+  text-transform: uppercase; margin: 1.1rem 0 0.45rem;
+}
+.puzzle-row { display: flex; align-items: center; gap: 8px; padding: 3px 0; font-size: 0.9rem; color: var(--muted); }
+.puzzle-row.done { color: var(--parchment); }
+.puzzle-row .mark { width: 18px; text-align: center; }
+.door-state { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px;
+  background: var(--panel); border: 1px solid var(--line); font-size: 0.9rem; }
+.item-card { display: flex; gap: 10px; align-items: flex-start; padding: 9px 11px; border-radius: 12px;
+  background: var(--panel); border: 1px solid var(--line); margin-bottom: 6px; }
+.item-card .icon { font-size: 1.35rem; }
+.item-card .name { font-weight: 600; color: var(--parchment); font-size: 0.9rem; }
+.item-card .desc { color: var(--muted); font-size: 0.78rem; }
+.empty { color: #7d725f; font-size: 0.85rem; font-style: italic; }
+.journal-entry {
+  border-left: 2px solid var(--brass); padding: 4px 0 4px 10px; margin-bottom: 8px;
+  font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.02rem; color: var(--parchment); line-height: 1.35;
+}
+.journal-entry b { font-family: 'Inter', sans-serif; font-size: 0.7rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--brass); display: block; margin-bottom: 1px; }
+.note-card { padding: 12px 14px; border-radius: 12px; border: 1px dashed var(--line-strong);
+  background: var(--brass-soft); color: var(--parchment); font-size: 0.85rem; line-height: 1.45; }
+
+/* ---------- victory ---------- */
+.victory {
+  text-align: center; padding: 26px 20px; margin: 0.4rem 0 1rem; border-radius: 18px;
+  background: radial-gradient(500px 200px at 50% 0%, rgba(212, 166, 74, 0.28), transparent 70%), var(--panel);
+  border: 1px solid var(--brass);
+}
+.victory .big { font-family: 'Cinzel', serif; font-size: 1.9rem; color: var(--brass); }
+.victory .lead { font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; color: var(--parchment); margin: 4px 0 14px; }
+.stats { display: flex; justify-content: center; gap: 26px; flex-wrap: wrap; }
+.stat .n { font-family: 'Cinzel', serif; font-size: 1.6rem; color: var(--parchment); }
+.stat .l { font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+
+/* ---------- small screens ---------- */
+@media (max-width: 640px) {
+  .hero img { height: 170px; }
+  .hero-text { left: 14px; right: 14px; bottom: 12px; }
+  .hero-title { font-size: 1.35rem; }
+  .version-pill { display: table; margin: 6px 0 0; font-size: 0.62rem; }
+  .hero-sub { display: none; }
+  [data-testid="stChatMessage"] p { font-size: 1.08rem; }
+}
+
+/* ---------- compact room tiles ---------- */
+[data-testid="stVerticalBlock"]:has(> [data-testid="stElementContainer"] .obj-head) .stButton > button,
+[data-testid="stVerticalBlock"]:has(> [data-testid="stElementContainer"] .obj-head) [data-testid="stPopover"] button {
+  min-height: 2.05rem; padding: 0.2rem 0.6rem; font-size: 0.8rem;
+}
