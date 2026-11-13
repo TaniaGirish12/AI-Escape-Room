@@ -32,3 +32,17 @@ def play_turn(player_text: str, engine: GameEngine, llm=None,
         "interpreter": interpreter_source,
         "narrator": narrator_source,
     }
+
+
+def play_action(action: dict, label: str, engine: GameEngine, llm=None,
+                recent_turns: list[dict] | None = None) -> dict:
+    """Run a turn for a button in the interface.
+
+    The action is already structured, so the interpreter is skipped. It still
+    goes through the engine (which decides) and the narrator (which describes).
+    """
+    full_action = {"action": "other", "target": "", "item": "", "code": "", **action}
+    result = engine.perform(full_action)
+    reply, narrator_source = narrate(label, [result], engine, llm, recent_turns)
+    return {"reply": reply, "actions": [full_action], "results": [result],
+            "interpreter": "button", "narrator": narrator_source}

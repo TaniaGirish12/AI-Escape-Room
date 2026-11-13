@@ -248,3 +248,27 @@ def test_random_actions_with_correct_codes_keep_the_state_consistent():
             assert game.check_invariants() == []
         escapes += game.state["escaped"]
     assert escapes > 0                                # the game is still winnable by valid moves
+
+
+# ------------------------------------------------------------ interface helpers
+
+def test_journal_lists_only_what_the_player_has_seen(game):
+    assert game.journal() == []
+    act(game, "examine", "bookshelf")
+    entries = game.journal()
+    assert len(entries) == 1 and "Vol. 3" in entries[0]["text"]       # red book of drawer code 392
+    assert DOOR_CODE not in str(game.journal())
+    play_to_flashlight(game)
+    act(game, "use", "painting", item="flashlight")
+    assert DOOR_CODE in game.journal()[-1]["text"]                  # only after it was revealed
+
+
+def test_object_status_and_reachable_items(game):
+    assert game.object_status()["drawer"] == "locked"
+    assert game.object_status()["clock"] == "unexplored"
+    assert game.reachable_items() == []
+    act(game, "enter_code", "drawer", code=DRAWER_CODE)
+    assert game.object_status()["drawer"] == "open"
+    assert game.reachable_items() == [("brass_key", "drawer")]
+    act(game, "take", "key")
+    assert game.reachable_items() == []

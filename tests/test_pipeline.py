@@ -213,3 +213,13 @@ def test_llm_moves_to_the_next_model_when_one_is_out_of_quota(monkeypatch):
     assert gemini.last_model == "model-b"
     assert gemini.generate("system", "prompt") == "fine"
     assert calls == ["model-a", "model-b", "model-b"]     # the exhausted model is skipped afterwards
+
+
+def test_button_actions_skip_the_interpreter_but_not_the_engine(game):
+    from pipeline import play_action
+    llm = FakeLLM(actions=None, narration="You try the door.")
+    turn = play_action({"action": "enter_code", "target": "door", "code": DOOR_CODE},
+                       "Enter the code on the door keypad", game, llm)
+    assert turn["interpreter"] == "button"
+    assert len(llm.prompts) == 1                                  # narrator only
+    assert not turn["results"][0]["success"] and not game.state["escaped"]

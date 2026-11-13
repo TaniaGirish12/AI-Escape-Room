@@ -87,6 +87,16 @@
     "door_code": "Unlock the exit door"
   },
 
+  "journal": {
+    "desk": "Note under the lamp: \u201cKnowledge has colours. Read red first, then green, then blue.\u201d",
+    "bookshelf": "Three new books: blue \u201cVol. {book_blue}\u201d, red \u201cVol. {book_red}\u201d, green \u201cVol. {book_green}\u201d.",
+    "clock": "Stopped at midnight. Pendulum: \u201cWhat the eye cannot see, violet light will free.\u201d",
+    "cabinet": "A torch with a violet lens, locked behind glass with a small brass lock.",
+    "drawer": "The desk drawer has a three-digit combination lock.",
+    "door": "The exit door has a four-digit keypad.",
+    "painting_revealed": "Glowing digits on the painting under UV light: {door_code}"
+  },
+
   "hints": {
     "drawer_code": "The note on the desk talks about colours. Have a close look at the bookshelf.",
     "take_brass_key": "The drawer is open. Have you taken what is inside?",

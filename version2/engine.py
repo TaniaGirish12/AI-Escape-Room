@@ -98,6 +98,37 @@ class GameEngine:
             "moves": self.state["moves"],
         }
 
+    def journal(self) -> list[dict]:
+        """Clues the player has already seen, for the notebook in the interface.
+
+        Only things the player has examined or uncovered are listed, so the
+        journal never shows more than the player has found in the game.
+        """
+        entries, texts = [], self.config.get("journal", {})
+        for object_id, status in self.state["objects"].items():
+            if status["examined"] and object_id in texts:
+                entries.append({"object": object_id, "text": self._fill(texts[object_id])})
+        if self.state["objects"]["painting"].get("revealed") and "painting_revealed" in texts:
+            entries.append({"object": "painting", "text": self._fill(texts["painting_revealed"])})
+        return entries
+
+    def object_status(self) -> dict:
+        """Status of every object for the room panel: locked / open / revealed / examined / unexplored."""
+        statuses = {}
+        for object_id, status in self.state["objects"].items():
+            if "locked" in status:
+                statuses[object_id] = "locked" if status["locked"] else "open"
+            elif status.get("revealed"):
+                statuses[object_id] = "revealed"
+            else:
+                statuses[object_id] = "examined" if status["examined"] else "unexplored"
+        return statuses
+
+    def reachable_items(self) -> list[tuple[str, str]]:
+        """Items lying in an open container that the player could pick up: (item_id, container_id)."""
+        return [(item_id, location) for item_id, location in self.state["item_locations"].items()
+                if location != "inventory" and self._item_visible(item_id)]
+
     def protected_secrets(self) -> list[str]:
         """Codes the player has not earned yet. They must never appear in a reply."""
         protected = []
