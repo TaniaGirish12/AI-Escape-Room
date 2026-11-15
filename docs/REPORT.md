@@ -74,14 +74,16 @@ guess commands, remember which locks were open and scroll back for clues. The se
 Version 2 added a room panel showing the engine's **live status** for every object, keypad
 pop-ups, *Take* and *Use* buttons, a clue journal, a progress bar, notifications and a victory
 screen, all in a "midnight library" theme. Button clicks send structured actions straight to the
-engine, which halves the Gemini requests per turn. The rules are unchanged, because every click
+engine, so a click needs one Gemini request instead of two. The rules are unchanged, because every click
 goes through the same engine checks.
 
 ## 4. Testing and results
 
 `evaluate.py` played nine scripted cases against both versions with the real API: the five
-challenges from the brief and four more. Version 1 used `gemini-3.5-flash-lite`, and Version 2
-used `gemini-3.1-flash-lite`. Every reply was read by hand.
+challenges from the brief and four more (run on 10 Nov). Version 1 used `gemini-3.5-flash-lite`;
+Version 2 used `gemini-3.1-flash-lite`, falling back to `gemini-3.5-flash-lite`. In 3 of Version 2's
+11 turns (cases 2, 3 and 8) the free-tier rate limit was hit and the offline fallback answered, with
+the same outcome. Every reply was read by hand.
 
 | # | Test case | Version 1 | Version 2 |
 |---|---|---|---|
@@ -97,8 +99,8 @@ used `gemini-3.1-flash-lite`. Every reply was read by hand.
 
 Gemini resisted the *obvious* attacks: impersonation, prompt injection and invented objects. It
 failed on **state**, by accepting a key the player never had and believing a false claim. Case 3
-failed again live in the browser, but a later run on another model held, so Version 1 is fair
-*only sometimes*. Version 2 held in every case. In addition, 51 automated tests (no API key needed)
+failed again live in the browser, where Version 2 refused it with Gemini answering. A later run
+on another model held, so Version 1 is fair *only sometimes*. Version 2 held in every case. In addition, 51 automated tests (no API key needed)
 cover the rules, a simulated *compromised* LLM, and 160,000 random actions after which invariants
 such as "escaped implies every puzzle is solved" are checked. No violation was found.
 
@@ -114,8 +116,9 @@ such as "escaped implies every puzzle is solved" are checked. No violation was f
   leaked codes, so it rated the Version 1 reply that opened the cabinet as "held". Errors are now
   reported as *not run*, and replies are reviewed by hand. This is a finding in itself: an LLM's
   *description* of the world cannot be checked unless the system keeps a state to compare it with.
-- **Escape-check false positives.** *"The glass door of the cabinet swings open"* matched the
-  door rule. Negated sentences and sentences about the cabinet or drawer are now excluded.
+- **Escape-check false positives.** While writing the tests, it turned out that the first version
+  of the check would block honest text such as *"The glass door of the cabinet swings open"*.
+  Negated sentences and sentences about the cabinet or drawer are now excluded.
 
 ## 6. Conclusion
 
