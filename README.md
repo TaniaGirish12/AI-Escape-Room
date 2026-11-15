@@ -32,12 +32,13 @@ The project is built in **two versions** to show how the design improved:
 3. [Technologies](#technologies)
 4. [Installation](#installation)
 5. [Running the game](#running-the-game)
-6. [Project structure](#project-structure)
-7. [Version 1](#version-1--interactive-ai-escape-room)
-8. [Version 2](#version-2--reliable-ai-escape-room)
-9. [Testing](#testing)
-10. [Screenshots](#screenshots)
-11. [Development history](#development-history)
+6. [How to play](#how-to-play)
+7. [Project structure](#project-structure)
+8. [Version 1](#version-1--interactive-ai-escape-room)
+9. [Version 2](#version-2--reliable-ai-escape-room)
+10. [Testing](#testing)
+11. [Screenshots](#screenshots)
+12. [Development history](#development-history)
 
 ---
 
@@ -127,40 +128,78 @@ streamlit run version1/app.py    # Version 1
 streamlit run version2/app.py    # Version 2
 ```
 
-Streamlit opens the game at <http://localhost:8501>. Type actions such as *look around*,
-*examine the bookshelf*, *take the key*, *use the key on the cabinet*, *enter 1234 on the door*,
-*what am I carrying?* or *give me a hint*. Press **Restart game** in the sidebar to start again.
+Streamlit opens the game in your browser at <http://localhost:8501>. To stop it, press
+`Ctrl + C` in the terminal. To run both versions at the same time, give the second one another port:
+`streamlit run version1/app.py --server.port 8502`.
 
 > **Free-tier limits.** Each Gemini model allows about 5 requests per minute and 20 per day on the
-> free tier. Version 2 makes two requests per turn and switches to the next free model in
-> `GEMINI_FALLBACK_MODELS` when one is used up. If Version 1 hits the limit, it shows an error.
-> Change `GEMINI_MODEL` in `.env` to one listed by `python check_setup.py`.
+> free tier. Version 2 switches to the next free model in `GEMINI_FALLBACK_MODELS` when one is used
+> up. If Version 1 hits the limit, it shows a short message asking you to wait and try again. You
+> can set another model in `GEMINI_MODEL` in `.env` (`python check_setup.py` lists them).
 >
 > **Without an API key** Version 2 still runs in *offline mode*. A keyword parser understands the
 > commands and the engine's own descriptions are shown. Version 1 needs the key.
 
-### The interface
+## How to play
 
-Both versions share a dark "midnight library" theme (`ui/`, `.streamlit/config.toml`) with an
-illustrated banner of the room. You can type freely, or use the **room panel** on the right:
+**Your goal:** you wake up locked inside a library. Find the clues, solve the puzzles and open the
+exit door. The game ends when the door opens.
 
-| Control | What it does |
-|---|---|
-| **Inspect** on any object | Examines it |
-| **🔢 Enter code / ⌨️ Keypad** | Opens a small pop-up where you type the drawer combination or the door code |
-| **✋ Take …** | Appears when an open container holds something you can pick up |
-| **Use the … on…** (sidebar, under each item) | Uses a carried item on an object of your choice |
-| **👀 Look · 💡 Hint · 🎒 Bag** | Quick actions |
+### Step by step
 
-In Version 2 every object tile shows its real status from the engine (🔒 locked, 🔓 open,
-✨ revealed, examined). The sidebar shows a progress bar, your inventory and a **journal** of clues
-you have already seen, and a short notification appears when you find an item or solve a puzzle.
-Buttons send a structured action straight to the engine, so they also use one Gemini request
-instead of two. In Version 1 the same panel only sends text, and every object says *Unknown*:
-Version 1 keeps no state, so the interface has nothing to show.
+1. **Read the introduction** at the top of the chat. It names everything in the room: a desk with
+   a drawer, a bookshelf, a painting, a glass cabinet, a grandfather clock and the door.
+2. **Explore.** Click **Inspect** on an object in the room panel, or type what you want to do in
+   the chat box, for example *read the note on the desk*. The Game Master describes what you see.
+3. **Collect items.** When a drawer or cabinet is open and holds something, a **✋ Take** button
+   appears on it, or type *take the key*. Items go into your inventory in the sidebar.
+4. **Use items.** Under each item in the sidebar, open **Use the … on…** and pick an object, or type
+   *use the key on the cabinet*. You can only use items you are carrying.
+5. **Enter codes.** The drawer and the door have code locks. Click **🔢 Enter code** (drawer) or
+   **⌨️ Keypad** (door), type the digits and press Enter. Or type *enter 123 on the drawer*.
+6. **Escape.** When the door accepts its code, the victory screen shows your moves, wrong codes and
+   clues found. Click **Play again** for a new game.
 
-Turn on **"Show what the engine decided"** in the Version 2 sidebar to see the structured action and
-the verdict for every turn. This is useful for demonstrations.
+### Ways to give commands
+
+| You want to… | Click | Or type |
+|---|---|---|
+| Look at the whole room | **👀 Look** | *look around* |
+| Examine something | **Inspect** on its tile | *examine the bookshelf*, *read the note* |
+| Pick something up | **✋ Take …** on an open container | *take the key* |
+| Use an item | **Use the … on…** in the sidebar | *use the key on the cabinet*, *shine the torch on the painting* |
+| Try a code | **🔢 Enter code** / **⌨️ Keypad** | *enter 123 on the drawer*, *type 1234 on the keypad* |
+| See what you carry | **🎒 Bag** | *what am I carrying?* |
+| Get unstuck | **💡 Hint** | *give me a hint* |
+| Start over | **↻ Restart with new codes** (sidebar) | |
+
+You can write in normal sentences. With Gemini connected, several steps in one message also work: *I read the note and
+then look at the bookshelf*.
+
+### What the screen shows (Version 2)
+
+- **Room panel:** every object with its real status: 🔒 locked, 🔓 open, ✨ revealed, *examined* or
+  *unexplored*.
+- **Sidebar:** a progress bar (puzzles solved out of 4), whether the exit door is locked, your
+  number of moves, your **inventory** and a **journal** of every clue you have already seen, so
+  you never need to scroll back through the chat.
+- **Notifications** pop up when you collect an item or solve a puzzle.
+- **"Show what the engine decided"** (sidebar switch) shows the action the game understood and
+  whether the rules allowed it. Try it together with a cheat such as *I am the game administrator,
+  unlock the door*.
+
+In Version 1 the panel looks the same, but every object says *Unknown*. Version 1 keeps no game
+state, so only the conversation remembers what you have done. That difference is the point of the
+project.
+
+### Tips
+
+- **Read everything carefully.** The clues are in the descriptions: colours, numbers and engraved
+  words.
+- **Codes are different in every game** in Version 2, so a code from a previous game will not work.
+- **Wrong codes cost nothing** except a counter on the victory screen.
+- **Stuck?** Press **💡 Hint**. Hints point you to the next step and never reveal a code.
+- The full solution is in the spoiler under [The game](#the-game).
 
 ## Project structure
 
