@@ -225,7 +225,9 @@ AI-Escape-Room/
 │   ├── ARCHITECTURE.md      # architecture diagrams for both versions
 │   ├── TEST_CASES.md        # the nine test cases, with real replies from both versions
 │   ├── evaluation_results.md  # full transcripts of the live Gemini run
-│   ├── REPORT.md            # the 2-3 page project report
+│   ├── REPORT.pdf           # the 3-page project report (to submit)
+│   ├── REPORT.md            # the same report as Markdown
+│   ├── report/              # report figures (architecture of each version)
 │   └── screenshots/
 ├── evaluate.py              # runs the test cases against BOTH versions with the real API
 ├── check_setup.py           # checks the API key
@@ -442,7 +444,8 @@ Version 2 was built in two stages: first the reliable game logic (10 Nov), then 
 Version 2, including the enhanced interface.
 
 Both versions are kept side by side in `version1/` and `version2/`, so they can be run and compared.
-The full write-up is in [`docs/REPORT.md`](docs/REPORT.md).
+The project report (3 pages: design, implementation, problems and improvements) is in
+[`docs/REPORT.pdf`](docs/REPORT.pdf), with the same text in [`docs/REPORT.md`](docs/REPORT.md).
 
 ## Security note
 
