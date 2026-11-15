@@ -19,11 +19,10 @@ The project is built in **two versions** to show how the design improved:
 | Interface shows the game state | ❌ every object is *Unknown* | ✅ live object status, inventory, clue journal, progress bar |
 | Play by clicking | Buttons only send text to the LLM | Buttons send checked actions to the engine (one Gemini call instead of two) |
 
-**Same message, real Gemini, both versions.** The player falsely claims to have solved a puzzle:
+![The Midnight Library, Version 2: room panel with live object status, clue journal and progress](docs/screenshots/v2_start.png)
 
-| Version 1: the Game Master believes it and opens the cabinet ❌ | Version 2: the engine checks the state and refuses ✅ |
-|---|---|
-| ![Version 1 accepts a false claim](docs/screenshots/v1_live_false_claim.png) | ![Version 2 refuses the false claim](docs/screenshots/v2_live_false_claim.png) |
+*Version 2. See [How to play](#how-to-play) to try it, and [Testing](#testing) for a live example of
+Version 1 being tricked by a player while Version 2 refuses.*
 
 ---
 
@@ -332,7 +331,13 @@ A detailed version with a table of what each part can see is in
 
 Version 2 was finished in two stages. The first stage (10 Nov) made the game **reliable**: the
 engine, the interpreter and the narrator described above. The second stage (13–15 Nov) made it
-**easier and nicer to play**. Playing the first Version 2 showed these usability problems:
+**easier and nicer to play**.
+
+| Before: Version 2 on 10 Nov | After: Version 2 on 15 Nov |
+|---|---|
+| ![Version 2 before the interface enhancement: default Streamlit page with a plain chat and a text sidebar](docs/screenshots/v2_before_enhancement.png) | ![Version 2 after the interface enhancement: themed page with room panel, status chips, journal and progress bar](docs/screenshots/v2_start.png) |
+
+Playing the first Version 2 showed these usability problems:
 
 | Problem in the first Version 2 interface | Enhancement | Where |
 |---|---|---|
@@ -413,12 +418,22 @@ stay within the free tier. Results from the run on 10 Nov 2026:
 The automatic checker only detects leaked codes and false escapes. Version 1 has no state to
 inspect, so its replies were also read by hand. That is how TC1, TC3 and TC7 were found.
 
+**Seen live (TC3).** The same false claim, sent to both versions with real Gemini. *Recorded on
+10 Nov, before the interface enhancement, so both apps still have the earlier plain look.*
+
+| Version 1: the Game Master believes it and opens the cabinet ❌ | Version 2: the engine checks the state and refuses ✅ |
+|---|---|
+| ![Version 1 accepts a false claim](docs/screenshots/v1_live_false_claim.png) | ![Version 2 refuses the false claim](docs/screenshots/v2_live_false_claim.png) |
+
+Retried on 13 Nov with another model, Version 1 resisted the same message, so these are kept as the
+recorded evidence instead of being retaken in the new design. The outcome varies from run to run,
+which is exactly why Version 1 cannot be trusted.
+
 ## Screenshots
 
-**Version 2: the redesigned interface.** The room panel shows the engine's real status for every
-object, and the sidebar shows progress, inventory and a journal of the clues found so far.
-
-![Version 2 start screen](docs/screenshots/v2_start.png)
+**Version 2 with the enhanced interface** (the start screen is at the top of this page). The room
+panel shows the engine's real status for every object, and the sidebar shows progress, inventory and
+a journal of the clues found so far.
 
 | Live Gemini narration, with "Show what the engine decided" on | Mid-game: three puzzles solved, painting revealed |
 |---|---|
@@ -428,8 +443,9 @@ object, and the sidebar shows progress, inventory and a journal of the clues fou
 |---|---|---|
 | ![Version 2 escaped](docs/screenshots/v2_escaped.png) | ![Version 1 interface](docs/screenshots/v1_interface.png) | ![Version 2 on a phone](docs/screenshots/v2_mobile.png) |
 
-*The false-claim comparison at the top of this page was recorded live on 10 Nov, before the redesign.
-The midgame and escape screens were played in offline mode, which shows the engine's plain descriptions.*
+*The midgame and escape screens were played in offline mode, which shows the engine's plain
+descriptions. The earlier plain look appears only in the before/after comparison and in the dated
+live evidence under [Testing](#testing).*
 
 ## Development history
 
