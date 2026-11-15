@@ -1,7 +1,7 @@
 # AI-Powered Escape Room: *The Midnight Library*
 
 **Mini Project 1 · Deep Learning & Generative AI** · Tania Girish · November 2026<br>
-Repository: <https://github.com/TaniaGirish12/AI-Escape-Room>
+**GitHub repository:** [https://github.com/TaniaGirish12/AI-Escape-Room](https://github.com/TaniaGirish12/AI-Escape-Room)
 
 ## 1. Goal and game design
 
@@ -124,3 +124,8 @@ comes from the **system design, not from the prompt**. When Python owns the stat
 while the LLM translates and narrates, persuasion, invented objects and false claims cannot corrupt
 the game, and the LLM's flexibility and atmosphere are kept. Possible next steps are a limit on code
 attempts, more rooms defined in JSON, and saving games.
+
+**Source code, documentation and test results:**
+[https://github.com/TaniaGirish12/AI-Escape-Room](https://github.com/TaniaGirish12/AI-Escape-Room).
+The README explains how to install and run both versions. The `v1.0` and `v2.0` tags mark the two
+versions, and `docs/TEST_CASES.md` and `docs/evaluation_results.md` hold the full test transcripts.
