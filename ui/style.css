@@ -166,3 +166,21 @@ h3 { color: var(--brass) !important; font-size: 1.05rem !important; text-transfo
 [data-testid="stVerticalBlock"]:has(> [data-testid="stElementContainer"] .obj-head) [data-testid="stPopover"] button {
   min-height: 2.05rem; padding: 0.2rem 0.6rem; font-size: 0.8rem;
 }
+
+/* ---------- medium widths (laptop with sidebar open, browser panes, tablets) ---------- */
+.stButton > button p, [data-testid="stPopover"] button p {
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+@media (max-width: 1200px) {
+  /* room tiles: one per row instead of two, so buttons keep their full labels */
+  [data-testid="stHorizontalBlock"]:has(.obj-head):not(:has([data-testid="stChatMessage"])) {
+    flex-direction: column; gap: 0.6rem;
+  }
+  [data-testid="stHorizontalBlock"]:has(.obj-head):not(:has([data-testid="stChatMessage"])) > [data-testid="stColumn"] {
+    width: 100% !important; flex: 1 1 auto !important; min-width: 100% !important;
+  }
+}
+
+/* quick actions (Look / Hint / Bag): tighter padding so the labels fit in narrow panels */
+.st-key-quick-actions .stButton > button { padding: 0.3rem 0.35rem; }
+.st-key-quick-actions .stButton > button p { overflow: visible; text-overflow: clip; font-size: 0.82rem; }

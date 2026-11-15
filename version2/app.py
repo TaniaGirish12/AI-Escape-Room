@@ -164,7 +164,7 @@ chat_col, room_col = st.columns([1.65, 1], gap="large")
 
 with room_col:
     st.markdown('<div class="panel-title">The room</div>', unsafe_allow_html=True)
-    quick = st.columns(3)
+    quick = st.container(key="quick-actions").columns(3)
     quick[0].button("👀 Look", use_container_width=True, disabled=game_over, on_click=queue_action,
                     args=({"action": "look"}, "I look around the room."))
     quick[1].button("💡 Hint", use_container_width=True, disabled=game_over, on_click=queue_action,
