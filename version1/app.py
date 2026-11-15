@@ -143,6 +143,12 @@ with chat_col:
                 reply = ask_game_master(get_client(), st.session_state.history, player_message)
         except GameMasterError as error:
             text = str(error)
+            if "GEMINI_API_KEY" in text:
+                with live_turn:
+                    st.warning("No Gemini API key found. Version 1 needs one: copy `.env.example` to `.env`, "
+                               "add your free key from https://aistudio.google.com/apikey and restart the app "
+                               "(see *Installation* in the README).", icon="🔑")
+                st.stop()
             if "RESOURCE_EXHAUSTED" in text or "429" in text:
                 reason = "The free Gemini quota for this model is used up for now."
             elif "UNAVAILABLE" in text or "503" in text or "DEADLINE" in text:
