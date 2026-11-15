@@ -98,6 +98,14 @@ plain text keep it playable, which is how the offline mode works.
 earlier puzzles were missing, so a correct guess is not given away. Failed actions do not name items
 the player has not found yet. After the escape, every action is refused.
 
+**Interface enhancement.** After the logic was finished, playing the game showed usability
+problems: players had to guess commands, remember which locks were open and scroll back for clues.
+The second stage of Version 2 added a room panel with the engine's live status for every object,
+keypad pop-ups, take and use buttons, a clue journal, a progress bar and notifications, in a dark
+"midnight library" theme. Buttons send structured actions straight to the engine, so each click
+uses one Gemini request instead of two, which matters on the small free tier. The rules did not
+change: every button goes through the same engine checks.
+
 ## 5. Testing
 
 **Live evaluation.** `evaluate.py` plays nine scripted cases against both versions with the real

@@ -26,8 +26,9 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    P([Player]) -- "types a message" --> UI["Streamlit UI<br/>version2/app.py"]
-    UI --> I["Interpreter<br/>interpreter.py"]
+    P([Player]) -- "types or clicks" --> UI["Streamlit UI<br/>version2/app.py"]
+    UI -- "typed text" --> I["Interpreter<br/>interpreter.py"]
+    UI -- "button click:<br/>structured action" --> E
     I -- "message + list of object names<br/>(no codes)" --> G1["Gemini<br/>(JSON mode)"]
     G1 -- "{action, target, item, code}" --> I
     I -. "API down?<br/>keyword parser" .-> I
@@ -45,13 +46,14 @@ flowchart LR
 
 | Component | Role |
 |---|---|
-| `version2/app.py` | Streamlit page. Sidebar shows door status, solved puzzles and inventory straight from the engine. Optional "show what the engine decided" view. |
+| `version2/app.py` | Streamlit page. Room panel with each object's live status, keypads, take and use buttons; sidebar with progress, inventory and clue journal, all read from the engine. Optional "show what the engine decided" view. |
 | `version2/interpreter.py` | Turns the message into at most 3 structured actions using Gemini's JSON mode. Removes unknown verbs and any digits the player did not type. Falls back to a keyword parser. |
 | `version2/engine.py` | The rules. Keeps the state dictionary, validates every action, unlocks things, moves items into the inventory, generates the codes for each game and checks invariants. |
 | `version2/game_config.json` | The room as data: objects, aliases, locks, items, puzzle list and hints. |
 | `version2/narrator.py` | Asks Gemini to describe the engine's result. Rejects replies that contain a protected code or claim the door opened. Falls back to the engine's own text. |
-| `version2/pipeline.py` | One turn: interpreter → engine → narrator. |
-| `version2/llm.py` | Small Gemini wrapper with one retry. |
+| `version2/pipeline.py` | One turn: interpreter → engine → narrator (`play_turn`), or engine → narrator for a button click (`play_action`). |
+| `ui/` | Shared theme, stylesheet and banner illustration. Presentation only. |
+| `version2/llm.py` | Small Gemini wrapper with timeouts. Moves to the next free model when one is busy, out of quota or retired. |
 
 **Who decides whether an action succeeds?** `engine.py`. The LLM can only suggest an action and describe the result.
 

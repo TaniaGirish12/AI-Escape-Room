@@ -6,7 +6,7 @@ unlock the exit.
 
 The project is built in **two versions** to show how the design improved:
 
-| | Version 1 — *Interactive* | Version 2 — *Reliable* |
+| | Version 1 — *Interactive* | Version 2 — *Reliable and enhanced* |
 |---|---|---|
 | Who decides if an action works? | The LLM | Python (`engine.py`) |
 | Game state | Chat history only | Structured dictionary + JSON config |
@@ -16,6 +16,8 @@ The project is built in **two versions** to show how the design improved:
 | Live test with real Gemini (9 cases) | ❌ 2 failed, ⚠️ 1 inconsistent | ✅ 9 / 9 held |
 | Automated tests | design weaknesses proven | ✅ 51 tests, 160,000 fuzzed actions |
 | Works without an API key | ❌ | ✅ (offline mode) |
+| Interface shows the game state | ❌ every object is *Unknown* | ✅ live object status, inventory, clue journal, progress bar |
+| Play by clicking | Buttons only send text to the LLM | Buttons send checked actions to the engine (one Gemini call instead of two) |
 
 **Same message, real Gemini, both versions.** The player falsely claims to have solved a puzzle:
 
@@ -292,7 +294,8 @@ to check.
 ```mermaid
 flowchart LR
     P([Player]) -- message --> UI["Streamlit UI<br/>version2/app.py"]
-    UI --> I["Interpreter"]
+    UI -- "typed text" --> I["Interpreter"]
+    UI -- "button click:<br/>structured action" --> E
     I <-- "object names only,<br/>no codes" --> G1["Gemini<br/>JSON mode"]
     I -- "{action, target,<br/>item, code}" --> E["Game engine<br/>(Python rules)"]
     CFG[("game_config.json")] --> E
@@ -321,7 +324,35 @@ A detailed version with a table of what each part can see is in
 | **Neutral refusals.** A correct-but-too-early exit code looks exactly like a wrong one. Items not yet found are not named | Error messages must not give away hidden information | `engine.py` |
 | **Offline fallback.** Keyword parser plus the engine's plain text | The game keeps working if the API is down or rate-limited | `interpreter.py`, `narrator.py` |
 | **Model fallback and timeouts.** A busy, exhausted, slow or retired model is skipped | Found in testing: the free tier allows only 20 requests per day per model, one model hung (504) and one had been retired (404) | `llm.py` |
-| **Status sidebar** with puzzles, inventory and door | The player can see the real state, and it cannot contradict itself | `version2/app.py` |
+| **Enhanced interface.** Room panel with live status, keypads, journal, progress and feedback | See [Interface enhancement](#interface-enhancement) below | `version2/app.py`, `ui/` |
+
+### Interface enhancement
+
+Version 2 was finished in two stages. The first stage (10 Nov) made the game **reliable**: the
+engine, the interpreter and the narrator described above. The second stage (13–15 Nov) made it
+**easier and nicer to play**. Playing the first Version 2 showed these usability problems:
+
+| Problem in the first Version 2 interface | Enhancement | Where |
+|---|---|---|
+| Plain default Streamlit page with no atmosphere | Dark "midnight library" theme (ink, parchment and brass colours, serif narration) and an illustrated banner of the room drawn as SVG | `ui/style.css`, `ui/library_banner.svg`, `.streamlit/config.toml` |
+| Players had to guess what to type and which objects existed | **Room panel:** a tile for every object with an **Inspect** button, plus **Look / Hint / Bag** quick actions | `version2/app.py` |
+| The state was hidden; players had to remember what was locked or open | Each tile shows the engine's real status: 🔒 locked, 🔓 open, ✨ revealed, examined, unexplored | `engine.object_status()` |
+| Codes had to be typed as sentences | **🔢 Enter code** and **⌨️ Keypad** pop-ups on the drawer and the door | `version2/app.py` |
+| Picking up and using items needed exact wording | **✋ Take** appears on an open container; **Use the … on…** menu under each inventory item | `engine.reachable_items()` |
+| Clues were spread through a long chat | A **journal** in the sidebar records every clue the player has seen, and only those | `engine.journal()` |
+| No feedback on progress | Progress bar (puzzles solved out of 4), notifications for new items and solved puzzles, and a victory screen with moves, wrong codes and clues found | `version2/app.py` |
+| Every turn cost two Gemini requests, and the free tier is small | A button click sends a structured action straight to the engine and skips the interpreter: one request instead of two | `pipeline.play_action()` |
+| Raw API errors were shown to the player | Short, friendly message with the technical details folded away | `version1/app.py` |
+| Room tiles were squashed in narrow windows | Tiles stack one per row below 1200 px; phone layout without sideways scrolling | `ui/style.css` |
+
+The enhancement only changes the **interface**. The rules are untouched: every button still goes
+through the same engine checks as a typed message, and the helpers it uses (`journal()`,
+`object_status()`, `reachable_items()`) only read the state. Three new tests cover them, so the
+suite now has 51 tests.
+
+Version 1 uses the same visual theme, so the two versions can be compared fairly on behaviour rather
+than looks. Its room panel can only send text, though, and every object shows *Unknown*: without a
+game state, there is nothing for the interface to display.
 
 ### How Version 2 handles the challenges from the brief
 
@@ -406,8 +437,9 @@ tests → interpreter → narrator → UI → documentation. The two versions ar
 - [`v1.0`](https://github.com/TaniaGirish12/AI-Escape-Room/tree/v1.0): Version 1 complete
 - [`v2.0`](https://github.com/TaniaGirish12/AI-Escape-Room/tree/v2.0): Version 2 complete
 
-After `v2.0`, the interface of both versions was redesigned (13 Nov): theme, room panel, keypad
-pop-ups, journal, progress feedback and a phone layout.
+Version 2 was built in two stages: first the reliable game logic (10 Nov), then the
+[interface enhancement](#interface-enhancement) (13–15 Nov). The `v2.0` tag marks the finished
+Version 2, including the enhanced interface.
 
 Both versions are kept side by side in `version1/` and `version2/`, so they can be run and compared.
 The full write-up is in [`docs/REPORT.md`](docs/REPORT.md).
